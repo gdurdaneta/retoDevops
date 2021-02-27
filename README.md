@@ -102,11 +102,11 @@ spec:
       targetPort: 80
       port: 80
       nodePort: 30080
-      ´´´
+```      
       
-kubectl apply -n gerardo-production -f service.yaml
+  kubectl apply -n gerardo-production -f service.yaml
 
-y deploy.yaml
+  y deploy.yaml
 
  # Etapa 5 
  #### Desafio
