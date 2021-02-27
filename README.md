@@ -1,4 +1,4 @@
-# retoDevops
+# RetoDevops
 
 Se comentan las configuraciones realizadas par el reto Devops Chiper
 
@@ -41,6 +41,7 @@ Cree un configmap con variables de entorno para un despliegue en el entorno de p
 
 Se creo un archivo llamado envars.yaml donde contenia el siguiente codigo
 
+```
 apiVersion: v1
 kind: Pod
 metadata:
@@ -58,7 +59,7 @@ spec:
       value: "80"
     - name: myenv3
       value: value
-      
+ ```     
  este fue cargado bajo los comandos
  kubectl apply -n gerardo-production -f envars.yaml
  y se uso el comando para verificar las variables
