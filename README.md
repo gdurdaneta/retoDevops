@@ -106,6 +106,10 @@ kubectl apply -n gerardo-production -f service.yaml
 
 y deploy.yaml
 
+ # Etapa 5 
+ #### Desafio
+
+
 ```
 apiVersion: apps/v1
 kind: Deployment
@@ -128,6 +132,7 @@ spec:
         name: nginx
 ```
 kubectl apply -n gerardo-production -f deploy.yaml
+
 
 # Etapa 6
  #### Desafio
