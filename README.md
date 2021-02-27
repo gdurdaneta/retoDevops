@@ -101,7 +101,9 @@ spec:
     - protocol: TCP
       targetPort: 80
       port: 80
-      nodePort: 30080```
+      nodePort: 30080
+      ´´´
+      
 kubectl apply -n gerardo-production -f service.yaml
 
 y deploy.yaml
@@ -131,6 +133,7 @@ spec:
       - image: nginx:latest
         name: nginx
 ```
+
 kubectl apply -n gerardo-production -f deploy.yaml
 
 
