@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: envarsreto
+  labels:
+    purpose: enviromentvars
+spec:
+  containers:
+  - name: envar-demo-container
+    image: gcr.io/google-samples/node-hello:1.0
+    env:
+    - name: myenv1
+      value: nginx
+    - name: myenv2
+      value: "80"
+    - name: myenv3
+      value: value
