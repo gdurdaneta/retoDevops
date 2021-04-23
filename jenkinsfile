@@ -1,0 +1,129 @@
+def PROJECT_ID = "dataflow-chiper"
+def imageTag = "gcr.io/${PROJECT_ID}/${JOB_NAME}:${BUILD_NUMBER}"
+def JENKINS_MAIL = "jenkins@hugogiraldodevops.com"
+def MAIL_CI = "hugo.giraldo@chiper.co"
+def MAIL_CD_DEV = "hugo.giraldo@chiper.co"
+def MAIL_CD_LAB = "hugo.giraldo@chiper.co"
+def PROJECT_ID_PROD = "chiper-rappi"
+def MAIL_CD_PROD = "hugo.giraldo@chiper.co"
+
+pipeline {
+  options {
+      timeout(time: 20, unit: 'MINUTES')
+  }
+  agent {
+    kubernetes {
+      label 'slave-branches'
+      defaultContainer 'jnlp'
+      yaml """
+apiversion: v1
+kind: Pod
+metadata:
+  labels:
+    component: ci
+spec:
+  serviceAccountName: cd-jenkins
+  securityContext:
+    runAsUser: 0 
+  volumes:
+  - name: dockersock
+    hostPath:
+      path: "/var/run/docker.sock"
+  - name: docker
+    hostPath:
+      path: "/usr/bin/docker"
+  - name: google-cloud-key
+    secret:
+      secretName: registry-jenkins
+  containers:
+  - name: gcloud
+    image: gcr.io/cloud-builders/gcloud
+    volumeMounts:
+    - name: google-cloud-key
+      readOnly: true
+      mountPath: "/var/secrets/google"
+    - name: docker
+      mountPath: "/usr/bin/docker"
+    - name: dockersock
+      mountPath: "/var/run/docker.sock"
+    command:
+    - cat
+    env:
+    - name: GOOGLE_APPLICATION_CREDENTIALS
+      value: /var/secrets/google/key.json
+    tty: true
+  - name: node
+    image: node:10.16-alpine
+    command:
+    - cat
+    tty: true
+  - name: docker
+    image: docker:18
+    volumeMounts:
+    - name: google-cloud-key
+      readOnly: true
+      mountPath: "/var/secrets/google"
+    - name: docker
+      mountPath: "/usr/bin/docker"
+    - name: dockersock
+      mountPath: "/var/run/docker.sock"
+    command:
+    - cat
+    env:
+    - name: GOOGLE_APPLICATION_CREDENTIALS
+      value: /var/secrets/google/key.json
+    tty: true
+"""
+    }
+  }
+  stages {
+    stage('Initialize') {
+      steps {
+//	    git branch: "${env.ghprbSourceBranch}", credentialsId: 'github', url: "${env.ghprbAuthorRepoGitUrl}"          
+        container('gcloud') {
+         echo 'payload branches'
+          sh 'printenv'
+          
+//          sh "gcloud config set project ${PROJECT_ID}"
+        }
+      }
+    } 
+    stage('verificacion') {
+      steps {
+//	    git branch: "${env.ghprbSourceBranch}", credentialsId: 'github', url: "${env.ghprbAuthorRepoGitUrl}"          
+        container('gcloud') {
+          echo 'se verifica que la rama este dentro de los parametros que tiene nuestro ciclo de desarrollo'
+        }
+      }
+    }
+    stage('borrar rama') {
+      steps {          
+        container('gcloud') {
+          echo 'Se borra rama que no este dentro de los parametros establecidos'
+        }
+      }
+    }
+    stage('Envio correo ') {
+      steps {
+//	    git branch: "${env.ghprbSourceBranch}", credentialsId: 'github', url: "${env.ghprbAuthorRepoGitUrl}"          
+        container('gcloud') {
+          echo 'se verifica que la rama este dentro de los parametros que tiene nuestro ciclo de desarrollo'
+        }
+      }
+    }
+  }
+  post {
+    always {
+      echo 'Pipeline Finalizado'
+    }
+    aborted{
+      echo 'El Pipeline ha sido cancelado'
+    }
+    failure {
+      echo 'Pipeline Fallo'
+    }
+    success {
+      echo 'Pipeline Exitoso!!'
+    }
+  }
+}
